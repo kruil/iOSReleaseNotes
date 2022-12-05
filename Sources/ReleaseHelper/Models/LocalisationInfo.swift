@@ -28,7 +28,7 @@ final class LocalisationInfo {
     func readFileToDictionary(_ path: String) {
         let translationIndex = name == "English" ? 1 : 2
         guard let text = try? String(contentsOfFile: path) else {
-            print("Error! Can't find file at \(path)")
+            Logger.logError("Error! Can't find file for \(name)")
             return
         }
         let lines = text.split(separator: "\n")
@@ -40,7 +40,7 @@ final class LocalisationInfo {
             guard !value.isEmpty else { continue }
             translations.append(.init(key: key, value: value))
         }
-        print(translations)
+        Logger.logEvent("✓ \(name)")
     }
 
     func getKeys(prefix: String) -> [String] {
