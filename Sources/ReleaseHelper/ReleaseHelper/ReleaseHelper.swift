@@ -1,38 +1,20 @@
-//
-//  File.swift
-//  
-//
-//  Created by Ilya Krupko on 04.11.2022.
-//
-
 import ArgumentParser
 import Foundation
 
-struct BuilNotesCommand: ParsableCommand {
+struct ReleaseHelper: ParsableCommand {
 
     static let configuration: CommandConfiguration = CommandConfiguration(
-        commandName: "buildnotes",
-        abstract: "Compiles release notes from different .csv files."
+        commandName: "releasehelper",
+        abstract: "Manage release notes in the command line!",
+        usage: "releasehelper buildnotes /Users/ikrupko/Documents/Crowdin v2.4",
+        version: "1.0.0",
+        shouldDisplay: true,
+        helpNames: .shortAndLong
     )
 
-    @Argument(help: "Path to localisation folders")
-    var path: String = "/Users/ikrupko/Documents/Crowdin"
+    lazy var englishLocalisation = LocalisationInfo(Settings.mainLanguage)
 
-    @Argument(help: "Version prefix")
-    var versionPrefix: String = "v2.7"
-
-    lazy var englishLocalisation = LocalisationInfo(name: "English", pathPrefix: path + "/" + "")
-    lazy var localisations = [
-        LocalisationInfo(name: "Chinese", pathPrefix: path + "/" + "zh/"),
-        LocalisationInfo(name: "Hindi", pathPrefix: path + "/" + "hi/"),
-        LocalisationInfo(name: "Indonesian", pathPrefix: path + "/" + "id/"),
-        LocalisationInfo(name: "Malay", pathPrefix: path + "/" + "ms/"),
-        LocalisationInfo(name: "Portuguese", pathPrefix: path + "/" + "pt/"),
-        LocalisationInfo(name: "Spanish", pathPrefix: path + "/" + "es/"),
-        LocalisationInfo(name: "Thai", pathPrefix: path + "/" + "th/"),
-        LocalisationInfo(name: "Vietnamese", pathPrefix: path + "/" + "vi/"),
-        LocalisationInfo(name: "Turkish", pathPrefix: path + "/" + "tr/")
-    ]
+    lazy var localisations = Settings.languages.map { LocalisationInfo($0) }
 
     private func shell(command: String) {
         let task = Process()
@@ -43,13 +25,13 @@ struct BuilNotesCommand: ParsableCommand {
         task.waitUntilExit()
     }
 
-    fileprivate func downloadCrowdinFiles() {
-        let crowdinAppPath = Constants.crowdinAppPath
-        shell(command: "cd \(path) && \(crowdinAppPath) download sources && \(crowdinAppPath) download")
+    private func downloadCrowdinFiles() {
+        let crowdinAppPath = Settings.crowdinAppPath
+        shell(command: "cd \(Settings.sourceFilesPath) && \(crowdinAppPath) download sources && \(crowdinAppPath) download")
     }
 
     mutating func run() throws {
-        Logger.logEvent("Building release notes using prefix: \(versionPrefix)")
+        Logger.logEvent("Building release notes using prefix: \(Settings.versionPrefix)")
 
         Logger.logEvent("\n1: Download Crowdin files ---")
         downloadCrowdinFiles()
@@ -58,7 +40,7 @@ struct BuilNotesCommand: ParsableCommand {
         _ = englishLocalisation
         _ = localisations
 
-        let releaseKeys = englishLocalisation.getKeys(prefix: versionPrefix)
+        let releaseKeys = englishLocalisation.getKeys(prefix: Settings.versionPrefix)
         guard let englishReleaseNotes = englishLocalisation.getReleaseNotes(keys: releaseKeys) else {
             Logger.logError("Error! Can't create default release notes in English.")
             return
@@ -83,7 +65,7 @@ struct BuilNotesCommand: ParsableCommand {
     }
 
     func saveToFile(_ text: String) {
-        let filePathWithExtension = path + "/" + "ReleaseNotes_\(versionPrefix).txt"
+        let filePathWithExtension = Settings.sourceFilesPath + "/" + "ReleaseNotes_\(Settings.versionPrefix).txt"
         try? text.write(toFile: filePathWithExtension, atomically: true, encoding: .utf8)
     }
 }

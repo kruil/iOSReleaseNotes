@@ -15,20 +15,20 @@ final class LocalisationInfo {
     }
 
     let name: String
-    let pathPrefix: String
-    var path: String { pathPrefix + Constants.sourceFileName }
+    let pathLanguageCode: String
+    var pathToSourceFile: String { Settings.sourceFilesPath + "/" + pathLanguageCode + "/" + Settings.sourceFileName }
     var translations = [Translation]()
 
-    init(name: String, pathPrefix: String) {
-        self.name = name
-        self.pathPrefix = pathPrefix
-        readFileToDictionary(path)
+    init(_ language: Language) {
+        self.name = language.name
+        self.pathLanguageCode = language.pathLanguageCode
+        readFileToDictionary(pathToSourceFile)
     }
 
     func readFileToDictionary(_ path: String) {
         let translationIndex = name == "English" ? 1 : 2
         guard let text = try? String(contentsOfFile: path) else {
-            Logger.logError("Error! Can't find file for \(name)")
+            Logger.logError("Error! Can't find file for \(name): \(path)")
             return
         }
         let lines = text.split(separator: "\n")
