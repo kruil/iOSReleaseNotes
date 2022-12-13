@@ -9,16 +9,23 @@ import Foundation
 
 enum Settings {
 
-    /// Path to crowdinCLI executable
-    static let crowdinAppPath = "/usr/local/opt/crowdin@3/bin/crowdin"
+    // 0. Install Crowdin CLI https://developer.crowdin.com/cli-tool/ , test that crowdin command in SLI could be found.
 
-    /// Path to sources folder with crowdin.yml in root
-    static let sourceFilesPath: String = "/Users/ikrupko/Documents/Crowdin"
+    // 1. Create and set here path to folder, where source files stored and your releaseNotes.txt would be generated
+    static let sourceFilesPath: String = "/Users/ikrupko/Documents/ReleaseNotes"
 
-    /// Version prefix which is used to build release notes
+    // 2. Copy and paste crowdin.yaml file for this repository to folder above
+
+    // 3. Set version prefix which is used to build release notes
     static let versionPrefix: String = "v2.7"
 
-    // MARK: -
+    // 4. Run project and find generated file named releaseNotes_VERSION.txt in sourceFilesPath
+
+
+    // MARK: - Don't change everything below
+
+    // Path to crowdinCLI executable
+    static let crowdinAppPath = "/usr/local/opt/crowdin@3/bin/crowdin"
 
     static let sourceFileName = "ReleaseNotes.csv"
 

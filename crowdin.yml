@@ -1,0 +1,10 @@
+"project_id" : "63"
+"api_token" : "e611b9c33ff89a72848606ad3117dc4a3b3fae6369d08b1079ed94dc120fd754821f14bdc05ea079"
+"base_url" : "https://bragonatechnologies.crowdin.com"
+
+"files": [
+  {
+    "source": "/*.csv",
+    "translation": "/%osx_code%/%original_file_name%"
+  }
+]
